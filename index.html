@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>メンテナンス中</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="maintenance-container">
+        <img src="favicon.ico" class="maintenance-icon-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        <div style="display:none; font-size: 64px; margin-bottom: 20px;">⚙️</div>
+        
+        <h1>現在メンテナンス中です</h1>
+
+        <div class="maintenance-schedule">
+            <span class="schedule-label">Next Live</span>
+            <div class="schedule-date">現在のところ未定です</div>
+            <div class="schedule-time">決定次第表示いたします</div>
+        </div>
+
+        <p>
+            更新が終わり次第プレイできるようになります<br>
+            もうしばらくお待ちください
+        </p>
+    </div>
+
+    <div class="maintenance-footer">
+        werewolfgame system
+    </div>
+
+<script>
+        const ngrokUrl = "https://yawnful-oligarchic-von.ngrok-free.dev";
+    // さきほど提供いただいた favicon.ico を判定の証拠にします
+        const checkImageUrl = ngrokUrl + "/static/favicon.ico";
+
+        function checkServer() {
+            if (window.isRedirecting) return;
+
+            // 画像オブジェクトを作成して、ngrok先の画像を読み込ませる
+            const img = new Image();
+
+            img.onload = function() {
+                // 画像が読み込めた ＝ ngrokのエラー画面ではなく、人狼ゲームが起動している！
+                console.log("Werewolf icon detected! Redirecting...");
+                window.isRedirecting = true;
+                window.location.replace(ngrokUrl);
+            };
+
+            img.onerror = function() {
+                // 画像が読めない ＝ サーバー停止中、またはngrokのエラー画面（画像じゃない）
+                console.log("Server is still offline or showing ngrok error.");
+            };
+
+            // キャッシュ（古い記憶）を無視して最新の状態を確認するため、URLに時刻を混ぜる
+            img.src = checkImageUrl + "?t=" + new Date().getTime();
+        }
+
+        // 5秒おきにチェック
+        setInterval(checkServer, 5000);
+        checkServer();
+    </script>
+</body>
+</html>
